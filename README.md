@@ -1,65 +1,129 @@
-# SHAPAlert-GH - early dropout warning with SHAP explanations (OULAD -> Ghana)
+# SHAPAlert-GH
 
-Implements the *SHAPAlert-GH Student methodology guide*: one pipeline run on OULAD (Phase 1), frozen, then
-re-used unchanged on the Ghanaian LMS data (Phases 2-3), with SHAP/LEAF explanations (Phase 4).
+**An explainable gradient boosting early-warning system for e-learning dropout prediction in Ghanaian higher education, using OULAD and KNUST Moodle data.**
 
-**Golden rule:** finish and freeze Phase 1 (`03_freeze.py`) before touching any Ghana modelling script.
-Do not change the pipeline after seeing Ghana results; report any change as a post-hoc step.
+SHAPAlert-GH reads a student's learning management system (LMS) activity in the first weeks of a course, produces a calibrated dropout risk, flags the highest-risk students up to the number an adviser can contact, and attaches a SHAP explanation to each alert. The pipeline is built and frozen on the public Open University Learning Analytics Dataset (OULAD), then applied unchanged to pseudonymised Moodle records from Kwame Nkrumah University of Science and Technology (KNUST).
 
-## Run order
+## Research questions
+
+| | Question |
+|---|---|
+| RQ1 | Which gradient boosting model gives the best calibrated early warning on OULAD at 14, 28 and 42 days? |
+| RQ2 | How well does the OULAD-built pipeline work on KNUST data, alone and with fine-tuning? |
+| RQ3 | Which LMS behaviours drive dropout risk, and how stable and actionable are the explanations? |
+
+## What the pipeline does
+
+1. **Early windows with leakage control.** Only events before day T (14, 28 or 42) are used. OULAD registrations that unregistered before day T are removed, because their outcome is already known.
+2. **Shared, scale-free features.** Activity counts are standardised within each course; other features are ratios or fractions of the window. The same recipe runs on both datasets.
+3. **Models.** Majority class, logistic regression, decision tree and random forest baselines; HistGradientBoosting, XGBoost, LightGBM and CatBoost, tuned with Optuna (TPE, 30 trials, seed 42) on validation PR-AUC.
+4. **Class imbalance.** Handled inside each model with class weights. No resampling before splitting. SMOTE on training data only is run as an ablation.
+5. **Calibration and alerting.** Platt scaling on the validation set; alerts for the top 10%, 20% and 30% by risk; abstention for calibrated risks between 0.35 and 0.65.
+6. **Fairness audit (OULAD).** Recall and false-positive rate by gender, disability and age band, with 1,000 bootstrap resamples.
+7. **Freeze.** Features, model family, hyper-parameters, seed, code hashes and software versions are written to `outputs/frozen/frozen_pipeline.json` before any Ghanaian modelling.
+8. **Transfer experiments on KNUST data.**
+
+   | Experiment | Description |
+   |---|---|
+   | A. Zero-shot | Frozen OULAD model applied to all KNUST students |
+   | B. Local | Trained and tested on KNUST only |
+   | C. Fine-tuned | OULAD model's log-odds added as a feature for the KNUST model |
+   | D. Pooled | OULAD plus KNUST training rows, KNUST weighted five times |
+
+9. **Explanations.** SHAP values on held-out data (global importance, beeswarm, individual waterfalls), scored with LEAF-style checks (fidelity, local concordance, prescriptivity) and bootstrap rank stability over 100 refits.
+
+## Data
+
+| Dataset | Size | Outcome | Access |
+|---|---|---|---|
+| OULAD | 32,593 registrations, 7 modules, 4 presentations (2013B to 2014J) | `final_result` = "Withdrawn" | Public: https://analyse.kmi.open.ac.uk/open_dataset |
+| KNUST Moodle | 4,450 students, 950,628 log events, one 2026 presentation | No login for 21+ consecutive days and two consecutive missed graded quizzes (790 dropouts, 17.8%) | Not public |
+
+KNUST student-level data cannot be shared. The files are pseudonymised, held under the Data Protection Act 2012 (Act 843), and excluded from version control. Code and aggregate outputs can be shared.
+
+## Requirements
+
+Python 3.10.11. Exact pins are in `requirements-lock.txt`.
+
+| Package | Version |
+|---|---|
+| pandas | 2.3.3 |
+| scikit-learn | 1.7.2 |
+| XGBoost | 3.2.0 |
+| LightGBM | 4.7.0 |
+| CatBoost | 1.2.10 |
+| SHAP | 0.49.1 |
+| Optuna | 5.0.0 |
+| imbalanced-learn | 0.14.2 |
+| SciPy | 1.15.3 |
+| matplotlib | 3.10.8 |
+
+## Quick start
 
 ```bash
-pip install -r requirements.txt
-python run_all.py --phase1      # 01 build OULAD -> 02 models -> 03 FREEZE -> 04 fairness
-python run_all.py --phase23     # 05 build Ghana -> 06 experiments (+small-sample) -> 07 SHAP/LEAF -> 08 tables
-python -m pytest tests -q       # leakage + split-integrity tests
+# 1. Create an environment and install pinned dependencies
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements-lock.txt
+
+# 2. Download OULAD and place the seven CSV tables in the data folder set in config.yaml
+
+# 3. Run the whole pipeline in its fixed order
+python run_all.py
+
+# 4. Run the leakage and split-integrity tests
+pytest
 ```
 
-| Step | Script | Guide step | Output |
-|---|---|---|---|
-| 1 | `scripts/01_build_oulad.py` | 1.1-1.3 | `data/processed/oulad_w{14,28,42}.csv` |
-| 2 | `scripts/02_oulad_models.py` | 1.4-1.8 | Tables 2, 3, abstention, SMOTE ablation, calibration + recall-vs-window figures |
-| 3 | `scripts/03_freeze.py` | 1.10 | `outputs/frozen/frozen_pipeline.json` (features, params, seed, code hashes) |
-| 4 | `scripts/04_oulad_fairness.py` | 1.9 | Table 6 (bootstrap CIs, 1000 resamples) |
-| 5 | `scripts/05_build_ghana.py` | 2.4-2.6 | `data/processed/ghana_w*.csv`, quality report, data dictionary, Table 1 |
-| 6 | `scripts/06_ghana_experiments.py [--small]` | 3.1-3.5 | Table 4 (A-D), earliness, small-sample sensitivity |
-| 7 | `scripts/07_explain.py` | 4.1-4.6 | SHAP figures, local explanations, OULAD-vs-Ghana Spearman, Table 7 (LEAF + stability) |
-| 8 | `scripts/08_make_tables.py` | - | `outputs/RESULTS.md` index |
-| 9 | `scripts/09_wu_comparable_sensitivity.py` | - | Effect of removing early unregistrations (comparison with Wu et al.) |
-| 12 | `scripts/12_oulad_fairness_no_demographics.py` | - | Post-hoc fairness check without demographic predictors |
-| 10 | `scripts/10_build_report.py` | - | `outputs/SHAPAlert_GH_Manuscript_Draft.docx` (introduction, literature review, methods from `docs/methodology.md` + results from `outputs/tables`) |
+All settings live in `config.yaml`. Raw data are read-only. Without the KNUST files, only the OULAD stages can be reproduced.
 
-Configuration (seed 42, windows, trial counts, label rule, CV settings) is in `config.yaml`.
-Raw data (`oulad/`, `knust_source/`) is read-only and git-ignored.
+<!-- TODO: confirm the data folder paths, the test command and how run_all.py behaves when the KNUST files are absent. -->
 
-## Design decisions
+## Repository layout
 
-* **Label.** OULAD: `Withdrawn`. Ghana: proposal rule = >=21 days without login AND >=2 consecutive missed module quizzes (`docs/label_definition.md`; earlier non-completion label kept as a sensitivity set).
-* **Leak-free.** Only events with `day < T`; OULAD students who unregistered before `T` are removed; quiz/assessment records only if finished before `T`;
-  class imbalance is handled by `scale_pos_weight`/`class_weight` (SMOTE only as an ablation, inside an `imblearn` Pipeline on training data); tuning and Platt calibration use the validation set only.
-* **Two OULAD splits.** Group split (whole course presentations held out, Wu et al.) and time-aware split (train 2013, validate 2014B, test 2014J).
-* **Transfer features.** Experiments A, C, D need features that exist in both datasets (`SHARED_FEATURES`): activity counts are z-scored *within each course*
-  (label-free), the rest are scale-free ratios. Resource-type and static demographic features exist only in OULAD and are used only in the OULAD-only experiments.
-* **Frozen transfer model.** `frozen_pipeline.json -> transfer_model_family` with Phase 1 hyper-parameters, retrained on shared features.
-  Ghana models use small capacity (depth 3, lr 0.05, min_child_samples 10, early stopping on an inner split of the training fold) and logistic regression is always run alongside.
-* **Experiments (Ghana).** Repeated stratified 5-fold x 10 CV; A zero-shot, B local, C OULAD score as stacking feature, D pooled with Ghana rows weighted x5; mean + bootstrap 95% CI;
-  the majority baseline is always shown; Brier uses cross-fitted Platt calibration.
-* **Explanations.** SHAP (TreeExplainer; permutation explainer for sklearn HGB) on test data. LEAF is implemented here (original code not used):
-  fidelity (weighted linear surrogate on the top-5 SHAP features of perturbed neighbours, class agreement), local concordance (1 - MAE of surrogate vs model risk on the 20 nearest real students),
-  prescriptivity (share of top-3 features that are changeable), stability (refit on 100 bootstrap training samples; mean pairwise Spearman; features outside the top 10 in >=20% of runs are "tentative").
+```
+config.yaml                 All settings
+run_all.py                  Runs the scripts in their fixed order
+requirements-lock.txt       Exact package versions
+scripts/                    Numbered pipeline steps
+  09_wu_comparable_sensitivity.py   28-day evaluation with early unregistrations kept
+outputs/
+  frozen/frozen_pipeline.json       Frozen specification carried to the KNUST data
+tests/                      Leakage and split-integrity tests
+```
 
-## Scope and data limits
+<!-- TODO: list the remaining scripts and output folders; only the files named in the manuscript are shown here. -->
 
-The study uses OULAD and the KNUST Moodle export only (`activity_log`, `gradebook_grades`, `quiz_attempts`: 4,450 students, one course presentation).
-The export has no enrolment table, no demographic fields and no assignment due dates, so fairness is audited on OULAD only and a "missed assessment" is a quiz with no graded result.
-Ethics approval and consent are prerequisites for any data use (`docs/ethics_checklist.md`).
+## Main findings
 
-## Changes after the freeze (for transparency)
+- **RQ1.** The four gradient boosting models gave very similar calibrated early warnings on OULAD. Discrimination is modest once early withdrawers are removed: ROC-AUC is about 0.64 at 28 days, against 0.79 when they are kept.
+- **RQ2.** The OULAD-built pipeline transferred to KNUST with little loss and no retraining. Fine-tuning and pooling added nothing measurable on the full sample. With 300 students, prior OULAD knowledge was at least as useful as local training.
+- **RQ3.** Risk was driven by early assessment information on OULAD and by activity volume and consistency on KNUST. KNUST explanations were stable across bootstrap refits; OULAD rankings were less stable.
 
-`outputs/frozen/frozen_pipeline.json` records code hashes at the time of freezing. After the freeze, only Ghana-side settings and reporting changed:
-the Ghana label rule (non-completion -> proposal rule; the earlier results are kept in `outputs/archive_label_noncompletion/`), removal of the optional
-survey branch (archived in `archive_survey/`), and the report builder. The Phase 1 model selection and hyper-parameters were not changed.
+## Limitations
 
-## Supervisor one-liners (fill before each meeting)
+- Absolute alert quality is limited: recall is about 0.30 at the top 20% at 28 days.
+- KNUST data come from one institution and one course presentation.
+- The KNUST export has no forum, assignment, enrolment or demographic fields, so fairness could not be audited on KNUST data.
+- The KNUST dropout label is derived from the same LMS sources as the features, so later windows partly measure the label.
+- SHAP shows what the model uses, not why students leave.
 
-Label? Window? What did I freeze (`outputs/frozen/frozen_pipeline.json`)? What number would change my conclusion? What could be leaking (`tests/test_leakage.py`)?
+## Ethics
+
+Ethical clearance was obtained from the Humanities and Social Sciences Research Ethics Committee (HUSSREC) of KNUST. The Office of the Registrar approved release of the LMS data on 4 August 2026.
+
+## Reporting
+
+Reporting follows the TRIPOD+AI guidance where applicable. The evaluation protocol extends Wu, Duan and Luo (PLoS ONE, 2026), doi:10.1371/journal.pone.0352867.
+
+## Citation
+
+<!-- TODO: add authors, year, title of the thesis or paper, and DOI once available. -->
+
+## Licence
+
+<!-- TODO: choose a licence for the code. -->
+
+## Contact
+
+<!-- TODO: add a contact name and email. -->
