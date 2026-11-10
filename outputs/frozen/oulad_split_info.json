@@ -1,0 +1,14 @@
+{
+  "group_test_courses": [
+    "DDD_2014B",
+    "FFF_2013J",
+    "FFF_2014B",
+    "GGG_2014J"
+  ],
+  "group_val_courses": [
+    "CCC_2014B",
+    "CCC_2014J",
+    "EEE_2013J",
+    "FFF_2013B"
+  ]
+}

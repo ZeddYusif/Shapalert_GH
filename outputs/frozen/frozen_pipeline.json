@@ -1,0 +1,238 @@
+{
+  "seed": 42,
+  "windows": [
+    14,
+    28,
+    42
+  ],
+  "primary_window": 28,
+  "label": "final_result == 'Withdrawn'",
+  "pre_start_days": 14,
+  "features_full": [
+    "clicks_total",
+    "active_days",
+    "distinct_resources",
+    "clicks_forum",
+    "clicks_quiz",
+    "clicks_resource",
+    "clicks_homepage",
+    "clicks_last_week",
+    "click_trend",
+    "days_since_last_click",
+    "first_click_day",
+    "n_early_assess",
+    "early_score_mean",
+    "clicks_per_active_day",
+    "active_ratio",
+    "gap_frac",
+    "gender_m",
+    "age_band_ord",
+    "edu_ord",
+    "disability_y",
+    "num_of_prev_attempts",
+    "studied_credits",
+    "imd_ord"
+  ],
+  "features_shared": [
+    "clicks_total_z",
+    "active_days_z",
+    "clicks_per_active_day_z",
+    "clicks_last_week_z",
+    "click_trend_z",
+    "active_ratio",
+    "gap_frac",
+    "first_click_frac",
+    "n_early_assess_z",
+    "early_score_mean",
+    "has_early_assess"
+  ],
+  "selection_rule": "highest validation PR-AUC among tuned GBMs (time-aware split)",
+  "best": {
+    "full|14": {
+      "model": "catboost",
+      "val_pr_auc": 0.3115,
+      "params": {
+        "learning_rate": 0.033431270770702314,
+        "depth": 7,
+        "iterations": 300,
+        "l2_leaf_reg": 6.412973461641197
+      }
+    },
+    "full|28": {
+      "model": "hgb",
+      "val_pr_auc": 0.3582,
+      "params": {
+        "learning_rate": 0.08127345463006433,
+        "max_depth": 2,
+        "max_iter": 200,
+        "min_samples_leaf": 31,
+        "l2_regularization": 0.046999961253115126
+      }
+    },
+    "full|42": {
+      "model": "lightgbm",
+      "val_pr_auc": 0.3492,
+      "params": {
+        "learning_rate": 0.03608615663071887,
+        "max_depth": 4,
+        "n_estimators": 150,
+        "min_child_samples": 76,
+        "subsample": 0.9008110136748377,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.6099072922595618,
+        "reg_lambda": 0.7471907848838386
+      }
+    },
+    "shared|14": {
+      "model": "xgboost",
+      "val_pr_auc": 0.2695,
+      "params": {
+        "learning_rate": 0.020138683865502303,
+        "max_depth": 2,
+        "n_estimators": 100,
+        "min_child_weight": 7,
+        "subsample": 0.6659145422028271,
+        "colsample_bytree": 0.7956985629789665,
+        "reg_lambda": 0.16296786229924082
+      }
+    },
+    "shared|28": {
+      "model": "hgb",
+      "val_pr_auc": 0.4005,
+      "params": {
+        "learning_rate": 0.02097077545038924,
+        "max_depth": 8,
+        "max_iter": 350,
+        "min_samples_leaf": 29,
+        "l2_regularization": 0.005337032762603957
+      }
+    },
+    "shared|42": {
+      "model": "hgb",
+      "val_pr_auc": 0.3512,
+      "params": {
+        "learning_rate": 0.08621028067683259,
+        "max_depth": 5,
+        "max_iter": 150,
+        "min_samples_leaf": 92,
+        "l2_regularization": 1.7661513070701944
+      }
+    }
+  },
+  "transfer_model_family": "hgb",
+  "transfer_params": {
+    "14": {
+      "hgb": {
+        "learning_rate": 0.0215316920837906,
+        "max_depth": 2,
+        "max_iter": 100,
+        "min_samples_leaf": 26,
+        "l2_regularization": 0.2909799176593914
+      },
+      "xgboost": {
+        "learning_rate": 0.020138683865502303,
+        "max_depth": 2,
+        "n_estimators": 100,
+        "min_child_weight": 7,
+        "subsample": 0.6659145422028271,
+        "colsample_bytree": 0.7956985629789665,
+        "reg_lambda": 0.16296786229924082
+      },
+      "lightgbm": {
+        "learning_rate": 0.12762323646820387,
+        "max_depth": 3,
+        "n_estimators": 200,
+        "min_child_samples": 35,
+        "subsample": 0.7424364893339976,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.8918148105745084,
+        "reg_lambda": 7.109730981593902
+      },
+      "catboost": {
+        "learning_rate": 0.04649921697572151,
+        "depth": 5,
+        "iterations": 300,
+        "l2_leaf_reg": 1.9026313062037632
+      }
+    },
+    "28": {
+      "hgb": {
+        "learning_rate": 0.02097077545038924,
+        "max_depth": 8,
+        "max_iter": 350,
+        "min_samples_leaf": 29,
+        "l2_regularization": 0.005337032762603957
+      },
+      "xgboost": {
+        "learning_rate": 0.04557586639709291,
+        "max_depth": 3,
+        "n_estimators": 250,
+        "min_child_weight": 9,
+        "subsample": 0.9622938915389534,
+        "colsample_bytree": 0.5838001136778219,
+        "reg_lambda": 2.1953101613285546
+      },
+      "lightgbm": {
+        "learning_rate": 0.03801694489746526,
+        "max_depth": 3,
+        "n_estimators": 250,
+        "min_child_samples": 38,
+        "subsample": 0.6673225454490127,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.5918037222760312,
+        "reg_lambda": 0.9454420644135719
+      },
+      "catboost": {
+        "learning_rate": 0.07695057032733851,
+        "depth": 6,
+        "iterations": 300,
+        "l2_leaf_reg": 8.06827664036199
+      }
+    },
+    "42": {
+      "hgb": {
+        "learning_rate": 0.08621028067683259,
+        "max_depth": 5,
+        "max_iter": 150,
+        "min_samples_leaf": 92,
+        "l2_regularization": 1.7661513070701944
+      },
+      "xgboost": {
+        "learning_rate": 0.022341847953726658,
+        "max_depth": 5,
+        "n_estimators": 300,
+        "min_child_weight": 16,
+        "subsample": 0.8585439039632174,
+        "colsample_bytree": 0.8663105350859795,
+        "reg_lambda": 0.9424419788514401
+      },
+      "lightgbm": {
+        "learning_rate": 0.0353688822663925,
+        "max_depth": 4,
+        "n_estimators": 150,
+        "min_child_samples": 83,
+        "subsample": 0.9139259566543159,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.6846671209457301,
+        "reg_lambda": 0.6932918528874666
+      },
+      "catboost": {
+        "learning_rate": 0.1901314465367729,
+        "depth": 2,
+        "iterations": 300,
+        "l2_leaf_reg": 2.6906342430908783
+      }
+    }
+  },
+  "code_hashes": {
+    "config.yaml": "707565ad49554006",
+    "scripts\\01_build_oulad.py": "bd2bb87559058450",
+    "scripts\\02_oulad_models.py": "cb531c9af43d0747",
+    "scripts\\03_freeze.py": "3a7b03e5e47fea45",
+    "src\\shapalert\\common.py": "9d208973aae919c7",
+    "src\\shapalert\\features.py": "4db450a85cd227e9",
+    "src\\shapalert\\models.py": "a60e7eaed28f6202"
+  },
+  "git_commit": "no commit yet (see code_hashes)",
+  "python": "3.10.11"
+}

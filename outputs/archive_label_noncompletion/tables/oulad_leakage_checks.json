@@ -1,0 +1,23 @@
+{
+  "14": {
+    "rows": 28128,
+    "removed_unregistered_before_T": 4465,
+    "dropout_rate": 0.2026094994311718,
+    "max_event_day_used": 13,
+    "max_assessment_day_used": 13
+  },
+  "28": {
+    "rows": 27553,
+    "removed_unregistered_before_T": 5040,
+    "dropout_rate": 0.18596886001524335,
+    "max_event_day_used": 27,
+    "max_assessment_day_used": 27
+  },
+  "42": {
+    "rows": 27034,
+    "removed_unregistered_before_T": 5559,
+    "dropout_rate": 0.1703410520085818,
+    "max_event_day_used": 41,
+    "max_assessment_day_used": 41
+  }
+}

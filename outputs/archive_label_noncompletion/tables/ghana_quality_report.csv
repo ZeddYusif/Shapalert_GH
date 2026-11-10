@@ -1,0 +1,15 @@
+,value
+raw_log_rows,950628
+duplicate_rows_removed,2109
+accounts_with_only_system_grade_events,0
+students_in_log,4450
+label_rule,noncompletion
+dropout_count,1361
+dropout_rate,0.3058426966292135
+WARNING_dropouts_below_40,False
+agreement_with_export_at_risk,0.9501123595505618
+survey,NOT AVAILABLE - Experiment 3.4 (survey value) will be skipped; see docs/survey_instrument.md
+zero_click_share_w14,0.4732584269662921
+zero_click_share_w28,0.3060674157303371
+zero_click_share_w42,0.1991011235955056
+students_never_active_in_first_42_days,886

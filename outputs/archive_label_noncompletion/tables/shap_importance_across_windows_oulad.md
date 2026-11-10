@@ -1,0 +1,25 @@
+| feature               |     14 |     28 |     42 |
+|:----------------------|-------:|-------:|-------:|
+| active_days           | 0.0293 | 0.0193 | 0.0265 |
+| active_ratio          | 0.0303 | 0      | 0.0138 |
+| age_band_ord          | 0.0162 | 0      | 0.0016 |
+| click_trend           | 0.0482 | 0.0071 | 0.0261 |
+| clicks_forum          | 0.027  | 0      | 0.0198 |
+| clicks_homepage       | 0.0276 | 0.0398 | 0.015  |
+| clicks_last_week      | 0.114  | 0.0162 | 0.0841 |
+| clicks_per_active_day | 0.0321 | 0.0199 | 0.0531 |
+| clicks_quiz           | 0.0501 | 0.0859 | 0.0318 |
+| clicks_resource       | 0.029  | 0.0185 | 0.0376 |
+| clicks_total          | 0.0342 | 0.0037 | 0.0195 |
+| days_since_last_click | 0.0463 | 0.0456 | 0.1019 |
+| disability_y          | 0.0751 | 0.0454 | 0.0508 |
+| distinct_resources    | 0.0247 | 0.101  | 0.102  |
+| early_score_mean      | 0.0853 | 0.4073 | 0.5052 |
+| edu_ord               | 0.166  | 0.0753 | 0.0901 |
+| first_click_day       | 0.0721 | 0.0422 | 0.0637 |
+| gap_frac              | 0.0404 | 0      | 0.0207 |
+| gender_m              | 0.0185 | 0      | 0.005  |
+| imd_ord               | 0.0783 | 0.034  | 0.0617 |
+| n_early_assess        | 0.0076 | 0.0056 | 0.0231 |
+| num_of_prev_attempts  | 0.0084 | 0      | 0.0019 |
+| studied_credits       | 0.3301 | 0.2549 | 0.3014 |

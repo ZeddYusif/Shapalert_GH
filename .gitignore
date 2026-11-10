@@ -1,0 +1,25 @@
+oulad/
+knust_source/
+data/processed/
+data/raw/
+outputs/models/
+__pycache__/
+*.pyc
+
+# --- not for the public repository ---
+logs/
+archive_survey/
+outputs/preds/
+outputs/models/
+outputs/*.docx
+outputs/RESULTS.md
+outputs/archive_label_noncompletion/figures/
+outputs/archive_label_noncompletion/tables/local_explanations_*
+outputs/figures/fig_waterfall_ghana_*
+outputs/tables/local_explanations_ghana_*
+# unpublished manuscript text and its builders
+docs/introduction_literature_review.md
+docs/discussion_conclusion.md
+docs/references.md
+scripts/10_build_report.py
+scripts/11_build_tripod_checklist.py

@@ -1,0 +1,3 @@
+dataset,fidelity,fidelity_non_degenerate,share_degenerate_neighbourhoods,local_concordance,prescriptivity,stability_spearman,n_tentative_features,tentative
+"OULAD full (hgb, 28d)",0.951,0.937,0.22,0.919,0.683,0.858,17,"clicks_total, active_days, clicks_forum, clicks_resource, clicks_homepage, clicks_last_week, click_trend, days_since_last_click, first_click_day, n_early_assess, active_ratio, gap_frac, gender_m, age_band_ord, disability_y, num_of_prev_attempts, imd_ord"
+"Ghana LMS (hgb, 28d)",0.929,0.908,0.248,0.79,1.0,0.913,0,

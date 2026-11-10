@@ -1,0 +1,17 @@
+column,meaning,unit,source
+pseudo_id,Pseudonymised student ID (no names/index numbers),text,LMS export
+y,"1 = dropout (non-completion, see label_definition.md); outcome only, never a feature",0/1,gradebook
+clicks_total,LMS log events with day < T,count,activity_log
+active_days,Distinct days with any event before T,days,activity_log
+clicks_last_week,"Events in days [T-7, T)",count,activity_log
+click_trend,Last-week events minus first-week events,count,activity_log
+days_since_last_click,(T-1) minus day of last event; horizon if never active,days,activity_log
+first_click_day,Day of first event (negative = before start); T if never active,days,activity_log
+clicks_per_active_day,clicks_total / active_days,ratio,derived
+active_ratio,active_days / (T + pre_start_days),ratio,derived
+gap_frac,days_since_last_click / (T + pre_start_days),ratio,derived
+first_click_frac,"Scaled first_click_day in [0,1]",ratio,derived
+n_early_assess,Quizzes finished before T (first attempt),count,quiz_attempts
+early_score_mean,Mean first-attempt percent of quizzes finished before T; NaN if none,%,quiz_attempts
+has_early_assess,n_early_assess > 0,0/1,derived
+*_z,Within-course z-score of the matching count feature (label-free),z,derived

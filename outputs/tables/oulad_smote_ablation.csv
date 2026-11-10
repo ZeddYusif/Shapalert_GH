@@ -1,0 +1,7 @@
+window,variant,pr_auc,recall@10%,recall@20%,recall@30%
+14,lightgbm + SMOTE (train only),0.3016,0.1763,0.3224,0.4396
+14,lightgbm + class weight,0.3188,0.1928,0.3276,0.4458
+28,lightgbm + SMOTE (train only),0.2902,0.1815,0.335,0.4454
+28,lightgbm + class weight,0.2704,0.1378,0.3406,0.4745
+42,lightgbm + SMOTE (train only),0.2701,0.1856,0.3389,0.4687
+42,lightgbm + class weight,0.2573,0.1558,0.3594,0.5065

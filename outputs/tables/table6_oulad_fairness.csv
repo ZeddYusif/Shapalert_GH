@@ -1,0 +1,8 @@
+attribute,group,reference,n,n_dropouts,recall,fpr,recall_lo,recall_hi,recall_gap_vs_ref,recall_gap_lo,recall_gap_hi,recall_gap_ci_excludes_0,fpr_lo,fpr_hi,fpr_gap_vs_ref,fpr_gap_lo,fpr_gap_hi,fpr_gap_ci_excludes_0
+gender,M,True,5343,1084,0.333,0.1176,0.3031,0.3593,0.0,0.0,0.0,False,0.1078,0.1272,0.0,0.0,0.0,False
+gender,F,False,3876,701,0.3566,0.2312,0.3215,0.394,0.0236,-0.0214,0.0685,False,0.2171,0.245,0.1135,0.0969,0.1309,True
+disability,N,True,8362,1550,0.3155,0.155,0.2907,0.3374,0.0,0.0,0.0,False,0.147,0.1631,0.0,0.0,0.0,False
+disability,Y,False,857,235,0.5191,0.2878,0.4579,0.5815,0.2037,0.1396,0.2668,True,0.25,0.321,0.1328,0.0917,0.1677,True
+age_band,55<=,False,87,17,0.1765,0.0714,0.0,0.3846,-0.1798,-0.359,0.0261,False,0.0156,0.137,-0.103,-0.1582,-0.0375,True
+age_band,0-35,True,6314,1235,0.3563,0.1744,0.3285,0.3822,0.0,0.0,0.0,False,0.1641,0.1839,0.0,0.0,0.0,False
+age_band,35-55,False,2818,533,0.3152,0.1505,0.2773,0.3557,-0.0411,-0.088,0.0069,False,0.1363,0.1647,-0.0239,-0.041,-0.0057,True

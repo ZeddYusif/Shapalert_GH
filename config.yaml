@@ -1,0 +1,49 @@
+# SHAPAlert-GH central configuration. Everything that affects results lives here.
+seed: 42
+paths:
+  oulad_dir: oulad                 # raw, read-only
+  ghana_dir: knust_source          # raw, read-only (LMS exports)
+  processed: data/processed
+  outputs: outputs
+windows: [14, 28, 42]              # days after course start
+primary_window: 28                 # Wu et al. window; used for fairness, SHAP headline, Ghana experiments
+pre_start_days: 14                 # events from this many days before start are kept (both datasets)
+
+oulad:
+  label: "final_result == 'Withdrawn'"   # Fail is NOT dropout (separate analysis)
+  time_split: {train: ["2013B", "2013J"], val: ["2014B"], test: ["2014J"]}
+  group_split: {test_frac: 0.2, val_frac: 0.2}
+ghana:
+  course_start: "2026-01-12"       # first week of mass activity in the export (CONFIRM with supervisor)
+  n_required_quizzes: 6            # Module 1-6 quizzes
+  label_rule: proposal_inactive21_missed2   # proposal_inactive21_missed2 | noncompletion | noncompletion | noncompletion_and_inactive | export_at_risk
+  inactive_days: 21                # used by noncompletion_and_inactive and as 'last 3 weeks' rule
+  small_n: 300                     # small-data sensitivity analysis size
+  small_draws: 5
+
+tuning:
+  n_trials: 30                     # guide: 30-50
+  models: [hgb, xgboost, lightgbm, catboost]
+  catboost_iterations: 300
+smote_ablation: true
+alerts:
+  capacities: [0.10, 0.20, 0.30]
+  abstain_band: [0.35, 0.65]       # calibrated risk inside the band => 'uncertain, check manually'
+fairness:
+  groups: [gender, disability, age_band]
+  n_boot: 1000
+  capacity: 0.20
+ghana_cv: {n_splits: 5, n_repeats: 10, ghana_weight: 5.0}
+ghana_small_model:                 # strong limits for small data (guide step 3.2)
+  max_depth: 3
+  n_estimators: 300
+  learning_rate: 0.05
+  min_child_samples: 10
+  early_stopping_rounds: 20
+explain:
+  top_k: 10
+  n_boot: 100
+  leaf_oulad_sample: 100
+  leaf_top_features: 5
+  stability_tentative_threshold: 0.8
+  shap_oulad_max_rows: 4000
